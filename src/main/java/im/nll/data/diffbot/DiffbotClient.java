@@ -5,6 +5,7 @@ import im.nll.data.diffbot.exception.ProcessException;
 import im.nll.data.diffbot.model.Article;
 import im.nll.data.diffbot.processor.ArticleProcessor;
 import org.apache.http.client.fluent.Request;
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,8 @@ import java.io.IOException;
  */
 public class DiffbotClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiffbotClient.class);
-    private String articleAPI = "https://api.diffbot.com/v3/article?";
+    private static final String TYPE_ARTICLE = "article";
+    private static final String VERSION = "3";
     /**
      * access token
      */
@@ -92,7 +94,13 @@ public class DiffbotClient {
     }
 
     private String getArticleAPI(String url) {
-        return articleAPI + "token=" + this.token + "&url=" + url;
+        URIBuilder ub = new URIBuilder()
+                .setScheme("https")
+                .setHost("api.diffbot.com")
+                .setPath("/v" + VERSION + "/" + TYPE_ARTICLE);
+        ub.setParameter("token", token);
+        ub.setParameter("url", url);
+        return ub.toString();
     }
 
     private static boolean isNullOrEmpty(String content) {
