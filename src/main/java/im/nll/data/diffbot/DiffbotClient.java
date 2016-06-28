@@ -77,7 +77,7 @@ public class DiffbotClient {
             html = Request.Get(requestUrl).socketTimeout(timeout).connectTimeout(timeout).execute().returnContent().asString();
             if (isNotNullOrEmpty(html)) {
                 //XXX WTF API
-                if (html.indexOf("errorCode") < 30) {
+                if (html.indexOf("errorCode") > 0 && html.indexOf("errorCode") < 30) {
                     throw new ClientException(html);
                 }
             }
