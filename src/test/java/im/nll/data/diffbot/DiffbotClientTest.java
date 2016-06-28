@@ -1,6 +1,5 @@
 package im.nll.data.diffbot;
 
-import com.alibaba.fastjson.JSON;
 import im.nll.data.diffbot.model.Article;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,10 +17,20 @@ public class DiffbotClientTest {
     }
 
     @Test
-    public void newClient() throws Exception {
+    public void article() throws Exception {
         String url = "http://www.bloomberg.com/news/articles/2016-03-07/alibaba-finance-affiliate-buy-h-k-firm-for-china-lotteries";
         Article article = DiffbotClient.newClient(token).article(url);
-        System.out.println(JSON.toJSONString(article, true));
+        System.out.println(article.getType());
+        System.out.println(article.getTitle());
+        System.out.println(article.getEstimatedDate());
+        System.out.println(article.getSiteName());
+        System.out.println(article.getText());
+        System.out.println(article.getPageUrl());
+        System.out.println(article.getHtml());
+        System.out.println(article.getDate());
+        System.out.println(article.getAuthor());
+        System.out.println(article.getAuthorUrl());
+        //and etc...
     }
 
 }
