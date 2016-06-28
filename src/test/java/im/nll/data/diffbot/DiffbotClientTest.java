@@ -11,7 +11,7 @@ import org.junit.Test;
  * @date 16/6/28 下午7:05
  */
 public class DiffbotClientTest {
-    private String token = "abc";
+    private String token = "testdrivexicwtiygezqa";
 
     @Before
     public void setUp() throws Exception {
