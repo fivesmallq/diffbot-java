@@ -1,8 +1,12 @@
 package im.nll.data.diffbot;
 
+import im.nll.data.diffbot.exception.ClientException;
+import im.nll.data.diffbot.exception.ProcessException;
 import im.nll.data.diffbot.model.Article;
 import im.nll.data.diffbot.processor.ArticleProcessor;
 import org.apache.http.client.fluent.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -14,7 +18,8 @@ import java.io.IOException;
  * @date 16/6/28 下午6:01
  */
 public class DiffbotClient {
-    private String baseUrl = "https://api.diffbot.com/v3/article?";
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiffbotClient.class);
+    private String articleAPI = "https://api.diffbot.com/v3/article?";
     /**
      * access token
      */
@@ -23,7 +28,7 @@ public class DiffbotClient {
     /**
      * request timeout,default 60s
      */
-    private long timeout = 60000;
+    private int timeout = 60000;
 
     private DiffbotClient(String token) {
         this.token = token;
@@ -33,9 +38,9 @@ public class DiffbotClient {
      * init client with token and request timeout
      *
      * @param token
-     * @param timeout
+     * @param timeout ms
      */
-    private DiffbotClient(String token, long timeout) {
+    private DiffbotClient(String token, int timeout) {
         this.token = token;
         this.timeout = timeout;
     }
@@ -57,21 +62,45 @@ public class DiffbotClient {
      * @param timeout
      * @return
      */
-    public static DiffbotClient newClient(String token, long timeout) {
+    public static DiffbotClient newClient(String token, int timeout) {
         return new DiffbotClient(token, timeout);
     }
 
     public Article article(String url) {
+        Article article = null;
         String html = "";
         try {
-            html = Request.Get(getBaseUrl(url)).execute().returnContent().asString();
+            String requestUrl = getArticleAPI(url);
+            LOGGER.debug("Request '{}'", requestUrl);
+            html = Request.Get(requestUrl).socketTimeout(timeout).connectTimeout(timeout).execute().returnContent().asString();
+            if (isNotNullOrEmpty(html)) {
+                //XXX WTF API
+                if (html.indexOf("errorCode") < 30) {
+                    throw new ClientException(html);
+                }
+            }
+            LOGGER.debug("Response html '{}'", html);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ClientException(e);
         }
-        return new ArticleProcessor().process(html);
+        try {
+            article = new ArticleProcessor().process(html);
+        } catch (Exception e) {
+            throw new ProcessException(e);
+        }
+        return article;
     }
 
-    private String getBaseUrl(String url) {
-        return baseUrl + "token=" + this.token + "&url=" + url;
+    private String getArticleAPI(String url) {
+        return articleAPI + "token=" + this.token + "&url=" + url;
+    }
+
+    private static boolean isNullOrEmpty(String content) {
+        return content == null || content.length() == 0
+                || "null".equals(content);
+    }
+
+    private static boolean isNotNullOrEmpty(String content) {
+        return (content != null) && (content.length() > 0);
     }
 }

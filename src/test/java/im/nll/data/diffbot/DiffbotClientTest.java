@@ -11,7 +11,7 @@ import org.junit.Test;
  * @date 16/6/28 下午7:05
  */
 public class DiffbotClientTest {
-    private String token = "testdrivexicwtiygezqa";
+    private String token = "abc";
 
     @Before
     public void setUp() throws Exception {
@@ -21,7 +21,7 @@ public class DiffbotClientTest {
     public void newClient() throws Exception {
         String url = "http://www.bloomberg.com/news/articles/2016-03-07/alibaba-finance-affiliate-buy-h-k-firm-for-china-lotteries";
         Article article = DiffbotClient.newClient(token).article(url);
-        System.out.println(JSON.toJSONString(article));
+        System.out.println(JSON.toJSONString(article, true));
     }
 
 }
