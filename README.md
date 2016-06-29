@@ -5,7 +5,7 @@
   diffbot api service for java. diffbot api doc https://www.diffbot.com/dev/docs/
   
 #Usage
-To add a dependency on Web-Data-Extractor using Maven, use the following:
+To add a dependency on diffbot-java using Maven, use the following:
 
 ```xml
 <dependency>
